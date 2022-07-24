@@ -3,7 +3,7 @@
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
-#include <math.h>
+#include <cmath>
 #include <string>
 #include <Fonts/FreeMonoBold18pt7b.h>
 
@@ -13,31 +13,37 @@
 
 #define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
 #define SCREEN_ADDRESS 0x3D ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
+
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+
+const int potPin = A1;
 
 String greeting = "BUTTS";
 
 void setup() {
+  pinMode(potPin, INPUT); 
   Serial.begin(9600);
+
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C); // Address 0x3C for 128x32
   
   display.setFont(&FreeMonoBold18pt7b);
   display.clearDisplay();
   display.display();
-  //display.setTextSize(2);
   display.setTextColor(SSD1306_WHITE);
-
 }
 
 void loop() {  
+  float fval = 1 - map(analogRead(potPin), 0, 1023, 0, 100) / 100.0f;
 
   for(unsigned int c = 0; c < greeting.length(); ++c){
-    int vcursor = 20 * sin(.5 * millis()) + 40;
+    int vcursor = (fval * 20) * sin(.5 * millis()) + 40;
     display.setCursor(c* 22, vcursor);
     display.print(greeting[c]);
      // actually display all of the above
   }
+  
   display.display();
   delay(100);
   display.clearDisplay();
 }
+
