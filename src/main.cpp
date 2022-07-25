@@ -18,7 +18,10 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 const int potPin = A1;
 
-String greeting = "BUTTS";
+unsigned long currentTime;
+unsigned long nextTime;
+
+String greeting = "Clams";
 
 void setup() {
   pinMode(potPin, INPUT); 
@@ -30,20 +33,23 @@ void setup() {
   display.clearDisplay();
   display.display();
   display.setTextColor(SSD1306_WHITE);
+  currentTime = millis();
+  nextTime = currentTime + 100;
 }
 
-void loop() {  
-  float fval = 1 - map(analogRead(potPin), 0, 1023, 0, 100) / 100.0f;
+void loop() {
+  currentTime = millis();
 
-  for(unsigned int c = 0; c < greeting.length(); ++c){
-    int vcursor = (fval * 20) * sin(.5 * millis()) + 40;
-    display.setCursor(c* 22, vcursor);
-    display.print(greeting[c]);
-     // actually display all of the above
+  if (currentTime == nextTime) {
+    float fval = 1 - map(analogRead(potPin), 0, 1023, 0, 100) / 100.0f;
+    for(unsigned int c = 0; c < greeting.length(); ++c){
+      int vcursor = (fval * 20) * sin(.8 * millis()) + 40;
+      display.setCursor(c* 22, vcursor);
+      display.print(greeting[c]);
+    }
+    display.display();
+    display.clearDisplay();
+    nextTime = millis() + 50;
   }
-  
-  display.display();
-  delay(100);
-  display.clearDisplay();
 }
 
