@@ -34,24 +34,19 @@ RGBValue* rgb = new RGBValue;
 
 RGBValue* RGBFromScale(int s, RGBValue* r)
 {
+    s = 1023 - s;  // Pot is reversed
     int R = 0; int G = 0; int B = 0;
 
     if(s >= 0 && s <= 512){
-        R = 255;
-        G = 0;
-        B = 0;
-        // R = map(s, 0, 1023, 255, 255);
-        // G = map(s, 0, 1023, 0, 255);
-        // B = map(s, 0, 1023, 0, 0);
-    }
+      R = map(s, 0, 512, 0, 230);   
+      G = map(s, 0, 512, 255, 255);
+      B = map(s, 0, 512, 90, 25);
 
+    }
     else if(s>512 && s<=1023){
-        R = 0;
-        G = 255;
-        B = 60;
-        // R = map(s, 0, 1023, 255, 0);
-        // G = map(s, 0, 1023, 255, 255);
-        // B = map(s, 0, 1023, 0, 90);
+      R = map(s, 513, 1023, 230, 255);
+      G = map(s, 513, 1023, 255, 0);
+      B = map(s, 513, 1023, 25, 0);
     }
 
     r->R = R; r->G = G; r->B = B; 
@@ -89,15 +84,16 @@ void setup() {
 
 
 void loop() {
-  
-
   currentTime = millis();
 
   if (currentTime == nextTime) {
-    rgb = RGBFromScale( 600, rgb);
-    Serial.println(rgb->B);
+    int potRawVal = analogRead(potPin);
+    rgb = RGBFromScale( potRawVal, rgb);
+    SetRGBLED(rgb);
+
+    //Serial.println(potRawVal);
     //Map the range of the pot to 1-100, divide by float 100 to get value 0-1, 1-value to invert pot direction
-    float potScaleVal = 1 - map(analogRead(potPin), 0, 1023, 0, 100) / 100.0f;  
+    float potScaleVal = 1 - map(potRawVal, 0, 1023, 0, 100) / 100.0f;  
     
     for(unsigned int c = 0; c < greeting.length(); ++c){
       //Fval scales 20, the max range. .8 is a good value for a smooth sine wave. Add 40 for vertical offset
@@ -110,7 +106,5 @@ void loop() {
     display.clearDisplay();
     nextTime = millis() + frame_delay;
   }
-
-  
 }
 
