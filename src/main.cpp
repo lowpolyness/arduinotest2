@@ -32,21 +32,25 @@ typedef struct{
 
 RGBValue* rgb = new RGBValue;
 
+RGBValue* color1 = new RGBValue{0,255,90}; // Green
+RGBValue* color2 = new RGBValue{230,255,25}; // Yellow
+RGBValue* color3 = new RGBValue{255,0,0}; // Red
+
 RGBValue* RGBFromScale(int s, RGBValue* r)
 {
     s = 1023 - s;  // Pot is reversed
     int R = 0; int G = 0; int B = 0;
-
+    // Color1 to Color2
     if(s >= 0 && s <= 512){
-      R = map(s, 0, 512, 0, 230);   
-      G = map(s, 0, 512, 255, 255);
-      B = map(s, 0, 512, 90, 25);
-
+      R = map(s, 0, 512, color1->R, color2->R);   
+      G = map(s, 0, 512, color1->G, color2->G);
+      B = map(s, 0, 512, color1->B, color2->B);
     }
+    // Color2 to Color3
     else if(s>512 && s<=1023){
-      R = map(s, 513, 1023, 230, 255);
-      G = map(s, 513, 1023, 255, 0);
-      B = map(s, 513, 1023, 25, 0);
+      R = map(s, 513, 1023, color2->R, color3->R);
+      G = map(s, 513, 1023, color2->G, color3->G);
+      B = map(s, 513, 1023, color2->B, color3->B);
     }
 
     r->R = R; r->G = G; r->B = B; 
@@ -91,8 +95,6 @@ void loop() {
     rgb = RGBFromScale( potRawVal, rgb);
     SetRGBLED(rgb);
 
-    //Serial.println(potRawVal);
-    //Map the range of the pot to 1-100, divide by float 100 to get value 0-1, 1-value to invert pot direction
     float potScaleVal = 1 - map(potRawVal, 0, 1023, 0, 100) / 100.0f;  
     
     for(unsigned int c = 0; c < greeting.length(); ++c){
