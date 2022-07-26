@@ -80,10 +80,7 @@ void setup() {
   currentTime = millis();
   nextTime = currentTime + frame_delay;
 
-  rgb->R =0;
-  rgb->G =0;
-  rgb->B =60;
-  SetRGBLED(rgb);
+  SetRGBLED(color1);
 }
 
 
@@ -98,7 +95,7 @@ void loop() {
     float potScaleVal = 1 - map(potRawVal, 0, 1023, 0, 100) / 100.0f;  
     
     for(unsigned int c = 0; c < greeting.length(); ++c){
-      //Fval scales 20, the max range. .8 is a good value for a smooth sine wave. Add 40 for vertical offset
+      //vcursor scales 20, the max range. .8 is a good value for a smooth sine wave. Add 40 for vertical offset
       int vcursor = (potScaleVal * 20) * sin(.8 * millis()) + 40;  
       display.setCursor(c* 22, vcursor);
       display.print(greeting[c]);
